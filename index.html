@@ -1,35 +1,124 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>WebAR Mô Hình Chim - AR.js</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  </head>
-  <body style="margin: 0px; overflow: hidden;">
-    
-    <a-scene embedded vr-mode-ui="enabled: false" arjs="sourceType: webcam; debugUIEnabled: false;">
-      
-      <a-assets>
-        <a-asset-item id="bird-obj" src="./assets/10012_crab_v2_iterations-1.obj"></a-asset-item>
-        <a-asset-item id="bird-mtl" src="./assets/10012_crab_v2_iterations-1.mtl"></a-asset-item>
-      </a-assets>
-      
-      <a-marker preset="hiro">
-        
-        <a-obj-model 
-          src="#bird-obj" 
-          mtl="#bird-mtl" 
-          position="0 0 0" 
-          scale="0.05 0.05 0.05" 
-          rotation="-90 0 0">
-        </a-obj-model>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>360 Video Viewer</title>
 
-      </a-marker>
-      
-      <a-entity camera></a-entity>
-      
-    </a-scene>
-  </body>
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- Look Controls for mobile gyro -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-look-at-component@1.0.0/dist/aframe-look-at-component.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: black;
+    }
+
+    #startBtn {
+      position: absolute;
+      z-index: 999;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #00bfff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #info {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      z-index: 999;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<button id="startBtn">Bật cảm biến & phát video</button>
+
+<div id="info">
+  Di chuyển điện thoại để xem video 360°
+</div>
+
+<a-scene embedded vr-mode-ui="enabled: false">
+
+  <a-assets>
+    <!-- Thay link video của bạn ở đây -->
+    <video
+      id="video360"
+      autoplay
+      loop
+      crossorigin="anonymous"
+      webkit-playsinline
+      playsinline
+    >
+      <source src="https://cdn.aframe.io/360-video/firedrill.mp4" type="video/mp4">
+    </video>
+  </a-assets>
+
+  <!-- Video 360 -->
+  <a-videosphere
+    src="#video360"
+    rotation="0 -90 0">
+  </a-videosphere>
+
+  <!-- Camera -->
+  <a-entity
+    id="cameraRig">
+    
+    <a-camera
+      look-controls="magicWindowTrackingEnabled: true"
+      wasd-controls-enabled="false">
+    </a-camera>
+
+  </a-entity>
+
+</a-scene>
+
+<script>
+  const btn = document.getElementById("startBtn");
+  const video = document.getElementById("video360");
+
+  btn.addEventListener("click", async () => {
+
+    // iPhone cần xin quyền gyro
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
+    ) {
+      try {
+        const permission =
+          await DeviceOrientationEvent.requestPermission();
+
+        if (permission === "granted") {
+          video.play();
+          btn.style.display = "none";
+        } else {
+          alert("Không được cấp quyền cảm biến!");
+        }
+      } catch (e) {
+        alert("Lỗi cảm biến: " + e);
+      }
+    } else {
+      // Android
+      video.play();
+      btn.style.display = "none";
+    }
+  });
+</script>
+
+</body>
 </html>
