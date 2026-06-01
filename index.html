@@ -1,123 +1,101 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>360 Video Viewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>360 VR Video</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-  <!-- Look Controls for mobile gyro -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-look-at-component@1.0.0/dist/aframe-look-at-component.min.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: black;
+    body{
+      margin:0;
+      overflow:hidden;
+      background:black;
     }
 
-    #startBtn {
-      position: absolute;
-      z-index: 999;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #00bfff;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #info {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      text-align: center;
-      color: white;
-      z-index: 999;
-      font-size: 14px;
+    #playBtn{
+      position:absolute;
+      z-index:999;
+      top:20px;
+      left:20px;
+      padding:10px 15px;
+      border:none;
+      border-radius:10px;
+      background:#2196f3;
+      color:white;
+      font-size:16px;
     }
   </style>
 </head>
+
 <body>
 
-<button id="startBtn">Bật cảm biến & phát video</button>
+<button id="playBtn">
+  Play VR Video
+</button>
 
-<div id="info">
-  Di chuyển điện thoại để xem video 360°
-</div>
-
-<a-scene embedded vr-mode-ui="enabled: false">
+<a-scene>
 
   <a-assets>
-    <!-- Thay link video của bạn ở đây -->
+
+    <!-- VIDEO CỦA BẠN -->
     <video
       id="video360"
-      autoplay
       loop
       crossorigin="anonymous"
       webkit-playsinline
       playsinline
     >
-      <source src="https://cdn.aframe.io/360-video/firedrill.mp4" type="video/mp4">
+      <source
+        src="downloadvideoVN_sheikra-8k-360-pov-front-back-row-the-ultimate-dive-vr-roller-coaster-experience_FHD.mp4"
+        type="video/mp4"
+      >
     </video>
+
   </a-assets>
 
-  <!-- Video 360 -->
-  <a-videosphere
-    src="#video360"
-    rotation="0 -90 0">
-  </a-videosphere>
+  <!-- VIDEO 360 -->
+  <a-videosphere src="#video360"></a-videosphere>
 
-  <!-- Camera -->
-  <a-entity
-    id="cameraRig">
-    
-    <a-camera
-      look-controls="magicWindowTrackingEnabled: true"
-      wasd-controls-enabled="false">
-    </a-camera>
-
-  </a-entity>
+  <!-- CAMERA -->
+  <a-camera></a-camera>
 
 </a-scene>
 
 <script>
-  const btn = document.getElementById("startBtn");
+  const btn = document.getElementById("playBtn");
   const video = document.getElementById("video360");
 
-  btn.addEventListener("click", async () => {
+  btn.onclick = async () => {
 
-    // iPhone cần xin quyền gyro
+    // iPhone
     if (
       typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function"
     ) {
+
       try {
+
         const permission =
           await DeviceOrientationEvent.requestPermission();
 
-        if (permission === "granted") {
+        if(permission === "granted"){
           video.play();
-          btn.style.display = "none";
-        } else {
-          alert("Không được cấp quyền cảm biến!");
         }
-      } catch (e) {
-        alert("Lỗi cảm biến: " + e);
+
+      } catch(e){
+        alert(e);
       }
+
     } else {
+
       // Android
       video.play();
-      btn.style.display = "none";
+
     }
-  });
+
+  };
 </script>
 
 </body>
