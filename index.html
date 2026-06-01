@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>360 VR Video</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width,
+                 initial-scale=1.0,
+                 maximum-scale=1.0,
+                 user-scalable=no">
+
+  <title>VR 360 Mobile</title>
 
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
@@ -12,90 +17,127 @@
       margin:0;
       overflow:hidden;
       background:black;
+      touch-action:none;
     }
 
-    #playBtn{
+    #startBtn{
       position:absolute;
       z-index:999;
       top:20px;
-      left:20px;
-      padding:10px 15px;
+      left:50%;
+      transform:translateX(-50%);
+      padding:14px 22px;
       border:none;
-      border-radius:10px;
+      border-radius:12px;
       background:#2196f3;
       color:white;
-      font-size:16px;
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    #text{
+      position:absolute;
+      z-index:999;
+      bottom:20px;
+      width:100%;
+      text-align:center;
+      color:white;
+      font-family:Arial;
+      font-size:15px;
     }
   </style>
 </head>
 
 <body>
 
-<button id="playBtn">
-  Play VR Video
+<button id="startBtn">
+  Bật cảm biến
 </button>
 
-<a-scene>
+<div id="text">
+  Xoay điện thoại để xem video 360°
+</div>
+
+<a-scene
+  vr-mode-ui="enabled: true"
+  device-orientation-permission-ui="enabled: false">
 
   <a-assets>
 
     <!-- VIDEO CỦA BẠN -->
     <video
       id="video360"
+      autoplay
       loop
       crossorigin="anonymous"
       webkit-playsinline
-      playsinline
-    >
+      playsinline>
+
       <source
-        src="downloadvideoVN_sheikra-8k-360-pov-front-back-row-the-ultimate-dive-vr-roller-coaster-experience_FHD.mp4"
-        type="video/mp4"
-      >
+        src="Video4k.mp4"
+        type="video/mp4">
+
     </video>
 
   </a-assets>
 
   <!-- VIDEO 360 -->
-  <a-videosphere src="#video360"></a-videosphere>
+  <a-videosphere
+    src="#video360"
+    rotation="0 -90 0">
+  </a-videosphere>
 
-  <!-- CAMERA -->
-  <a-camera></a-camera>
+  <!-- CAMERA ĐIỆN THOẠI -->
+  <a-camera
+    look-controls="magicWindowTrackingEnabled: true;
+                   touchEnabled: true">
+  </a-camera>
 
 </a-scene>
 
 <script>
-  const btn = document.getElementById("playBtn");
-  const video = document.getElementById("video360");
 
-  btn.onclick = async () => {
+const btn = document.getElementById("startBtn");
+const video = document.getElementById("video360");
 
-    // iPhone
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
-    ) {
+btn.onclick = async () => {
 
-      try {
+  // iPhone
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
 
-        const permission =
-          await DeviceOrientationEvent.requestPermission();
+    try {
 
-        if(permission === "granted"){
-          video.play();
-        }
+      const permission =
+        await DeviceOrientationEvent.requestPermission();
 
-      } catch(e){
-        alert(e);
+      if(permission === "granted"){
+
+        await video.play();
+
+        btn.style.display = "none";
+
       }
 
-    } else {
+    } catch(e){
 
-      // Android
-      video.play();
+      alert(e);
 
     }
 
-  };
+  } else {
+
+    // Android
+    await video.play();
+
+    btn.style.display = "none";
+
+  }
+
+};
+
 </script>
 
 </body>
